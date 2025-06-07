@@ -75,6 +75,7 @@ export FZF_CTRL_R_OPTS="--reverse --no-sort --exact"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
 EOF
 
 # ---------- Done ---------- #
