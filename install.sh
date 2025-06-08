@@ -34,6 +34,8 @@ echo "[*] Setting up Zsh..."
 sudo apt-get install -y zsh
 chsh -s $(which zsh)
 
+sudo apt install htop
+
 # Oh My Zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "[*] Installing Oh My Zsh..."
@@ -57,7 +59,6 @@ fi
 
 # Replace default ZSH_THEME in .zshrc
 sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$ZSHRC_PATH"
-
 
 # Inject custom .zshrc additions
 cat << 'EOF' >> "$ZSHRC_PATH"
