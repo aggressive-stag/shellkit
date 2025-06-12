@@ -1,0 +1,73 @@
+# 🖥️ Linux RDP Setup Guide (Using `xrdp`)
+
+This guide walks you through setting up `xrdp` for smooth remote desktop access on Linux VMs.
+
+---
+
+## ✅ Step-by-Step Setup
+
+### 1. Install `xrdp` and Desktop Environment
+
+```bash
+sudo apt update
+sudo apt install xrdp xfce4 xfce4-goodies -y
+```
+
+### 2. Set XFCE as the Default Desktop Environment
+
+```bash
+echo "startxfce4" > ~/.xsession
+sudo sed -i 's/^test -x/#test -x/' /etc/xrdp/startwm.sh
+echo "startxfce4" | sudo tee -a /etc/xrdp/startwm.sh
+```
+
+### 3. Restart and Enable `xrdp`
+
+```bash
+sudo systemctl restart xrdp
+sudo systemctl enable xrdp
+```
+
+### 4. Fix Missing Authentication Agent (Optional)
+
+```bash
+sudo apt install policykit-1-gnome -y
+mkdir -p ~/.config/autostart
+cp /etc/xdg/autostart/polkit-gnome-authentication-agent-1.desktop ~/.config/autostart/
+```
+
+### 5. Add User to `ssl-cert` Group
+
+```bash
+sudo adduser xrdp ssl-cert
+sudo systemctl restart xrdp
+```
+
+### 6. Fix Black Screen or Auto-Disconnect
+
+```bash
+pkill -u <your-username>
+# Ensure you're not logged into a local session.
+```
+
+---
+
+## 🛠️ Performance Tips
+
+- On Windows RDP client, disable:
+  - Font smoothing
+  - Desktop background
+  - Menu/window animations
+
+- Set connection to “LAN” if accessing locally.
+
+---
+
+## 🎯 Summary
+
+| Component               | Status         |
+|------------------------|----------------|
+| `xrdp` Installed       | ✅              |
+| XFCE Configured        | ✅              |
+
+This setup makes `xrdp` actually usable and avoids common black screen issues and sluggish performance.
