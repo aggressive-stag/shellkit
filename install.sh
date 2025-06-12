@@ -16,7 +16,7 @@ sudo chown "$USER:$USER" /git/shellkit
 # ---------- Tooling ---------- #
 echo "[*] Installing basic tools..."
 sudo apt-get update
-sudo apt-get install -y curl xclip ripgrep zsh wget bat
+sudo apt-get install -y curl xclip ripgrep zsh wget bat zip htop
 
 # fzf
 if [ ! -d "$HOME/.fzf" ]; then
@@ -33,8 +33,6 @@ sudo tar -xf /tmp/node.tar.xz --one-top-level=/usr/local -C /usr/local/
 echo "[*] Setting up Zsh..."
 sudo apt-get install -y zsh
 chsh -s $(which zsh)
-
-sudo apt install htop
 
 # Oh My Zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
