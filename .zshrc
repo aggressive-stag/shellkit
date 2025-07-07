@@ -124,9 +124,7 @@ export FZF_CTRL_R_OPTS="--reverse --no-sort --exact"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-precmd() {
-  local ip path
-  ip=$(hostname -I | awk '{print $1}')
-  path=$(dirs +0)  # gets current working directory
-  echo -ne "\033]0;${ip}@${path}\007"
+function set-tab-title {
+  print -Pn "\e]0;%n@%m: %~\a"
 }
+precmd_functions+=(set-tab-title)
