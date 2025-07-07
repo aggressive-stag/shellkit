@@ -75,6 +75,11 @@ export FZF_CTRL_R_OPTS="--reverse --no-sort --exact"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+function set-tab-title {
+  print -Pn "\e]0;%n@%m: %~\a"
+}
+precmd_functions+=(set-tab-title)
+
 EOF
 
 # ---------- Done ---------- #
