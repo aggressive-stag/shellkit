@@ -57,6 +57,8 @@ fi
 
 # Replace default ZSH_THEME in .zshrc
 sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$ZSHRC_PATH"
+# Ensure required Zsh plugins are enabled
+sed -i '/^plugins=/c\plugins=(git zsh-autosuggestions zsh-syntax-highlighting)' "$ZSHRC_PATH"
 
 # Inject custom .zshrc additions
 cat << 'EOF' >> "$ZSHRC_PATH"
@@ -81,6 +83,70 @@ function set-tab-title {
 precmd_functions+=(set-tab-title)
 
 EOF
+
+# ---------- Unattended Upgrades ---------- #
+echo "[*] Installing unattended-upgrades..."
+sudo apt-get install -y unattended-upgrades
+
+echo "[*] Enabling unattended-upgrades..."
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+
+echo "[*] Writing /etc/apt/apt.conf.d/20auto-upgrades..."
+sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null <<EOF
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::Unattended-Upgrade "1";
+EOF
+
+echo "[*] Writing /etc/apt/apt.conf.d/50unattended-upgrades..."
+sudo tee /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null <<'EOF'
+// Automatically upgrade packages from these (origin:archive) pairs
+Unattended-Upgrade::Allowed-Origins {
+        "\${distro_id}:\${distro_codename}";
+        "\${distro_id}:\${distro_codename}-security";
+        "\${distro_id}ESMApps:\${distro_codename}-apps-security";
+        "\${distro_id}ESM:\${distro_codename}-infra-security";
+        "\${distro_id}:\${distro_codename}-updates";
+//      "\${distro_id}:\${distro_codename}-proposed";
+//      "\${distro_id}:\${distro_codename}-backports";
+};
+
+Unattended-Upgrade::Package-Blacklist {
+    //  "linux-";
+    //  "libc6$";
+    //  "libc6-dev$";
+    //  "libc6-i686$";
+    //  "libstdc\\+\\+6$";
+    //  "(lib)?xen(store)?";
+};
+
+Unattended-Upgrade::DevRelease "auto";
+Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
+Unattended-Upgrade::Automatic-Reboot-Time "02:00";
+//Unattended-Upgrade::MinimalSteps "true";
+//Unattended-Upgrade::InstallOnShutdown "false";
+//Unattended-Upgrade::Mail "";
+//Unattended-Upgrade::MailReport "on-change";
+//Acquire::http::Dl-Limit "70";
+//Unattended-Upgrade::SyslogEnable "false";
+//Unattended-Upgrade::SyslogFacility "daemon";
+//Unattended-Upgrade::OnlyOnACPower "true";
+//Unattended-Upgrade::Skip-Updates-On-Metered-Connections "true";
+//Unattended-Upgrade::Verbose "false";
+//Unattended-Upgrade::Debug "false";
+//Unattended-Upgrade::Allow-downgrade "false";
+//Unattended-Upgrade::Allow-APT-Mark-Fallback "true";
+//Unattended-Upgrade::Postpone-For-Days "0";
+//Unattended-Upgrade::Postpone-Wait-Time "300";
+EOF
+
+echo "[*] Unattended-upgrades setup complete. You can test with:"
+echo "    sudo unattended-upgrade --dry-run --debug"
 
 # ---------- Done ---------- #
 echo "[*] Bootstrap complete. Launch a new shell or run 'zsh' to use your configuration."
