@@ -40,6 +40,9 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
   RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
+ZSH_CUSTOM_DIR="$HOME/.oh-my-zsh/custom"
+ZSHRC_PATH="$HOME/.zshrc"
+
 # zsh-autosuggestions
 if [ ! -d "$ZSH_CUSTOM_DIR/plugins/zsh-autosuggestions" ]; then
   git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM_DIR/plugins/zsh-autosuggestions"
