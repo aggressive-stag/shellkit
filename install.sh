@@ -86,14 +86,11 @@ function set-tab-title {
 precmd_functions+=(set-tab-title)
 
 EOF
-
 # ---------- Unattended Upgrades ---------- #
 echo "[*] Installing unattended-upgrades..."
 sudo apt-get install -y unattended-upgrades
-
 echo "[*] Enabling unattended-upgrades..."
 sudo dpkg-reconfigure --priority=low unattended-upgrades
-
 echo "[*] Writing /etc/apt/apt.conf.d/20auto-upgrades..."
 sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null <<EOF
 APT::Periodic::Update-Package-Lists "1";
@@ -102,18 +99,22 @@ APT::Periodic::Unattended-Upgrade "1";
 EOF
 
 echo "[*] Writing /etc/apt/apt.conf.d/50unattended-upgrades..."
-sudo tee /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null <<'EOF'
+# Get current distribution info
+DISTRO_ID=$(lsb_release -si)
+DISTRO_CODENAME=$(lsb_release -sc)
+
+# Create configuration with actual values instead of variables
+sudo tee /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null <<EOF
 // Automatically upgrade packages from these (origin:archive) pairs
 Unattended-Upgrade::Allowed-Origins {
-        "\${distro_id}:\${distro_codename}";
-        "\${distro_id}:\${distro_codename}-security";
-        "\${distro_id}ESMApps:\${distro_codename}-apps-security";
-        "\${distro_id}ESM:\${distro_codename}-infra-security";
-        "\${distro_id}:\${distro_codename}-updates";
-//      "\${distro_id}:\${distro_codename}-proposed";
-//      "\${distro_id}:\${distro_codename}-backports";
+        "${DISTRO_ID}:${DISTRO_CODENAME}";
+        "${DISTRO_ID}:${DISTRO_CODENAME}-security";
+        "${DISTRO_ID}ESMApps:${DISTRO_CODENAME}-apps-security";
+        "${DISTRO_ID}ESM:${DISTRO_CODENAME}-infra-security";
+        "${DISTRO_ID}:${DISTRO_CODENAME}-updates";
+//      "${DISTRO_ID}:${DISTRO_CODENAME}-proposed";
+//      "${DISTRO_ID}:${DISTRO_CODENAME}-backports";
 };
-
 Unattended-Upgrade::Package-Blacklist {
     //  "linux-";
     //  "libc6$";
@@ -122,7 +123,6 @@ Unattended-Upgrade::Package-Blacklist {
     //  "libstdc\\+\\+6$";
     //  "(lib)?xen(store)?";
 };
-
 Unattended-Upgrade::DevRelease "auto";
 Unattended-Upgrade::AutoFixInterruptedDpkg "true";
 Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
@@ -148,8 +148,10 @@ Unattended-Upgrade::Automatic-Reboot-Time "02:00";
 //Unattended-Upgrade::Postpone-Wait-Time "300";
 EOF
 
+echo "[*] Validating unattended-upgrades configuration..."
+sudo unattended-upgrade --dry-run --debug > /dev/null
+
 echo "[*] Unattended-upgrades setup complete. You can test with:"
 echo "    sudo unattended-upgrade --dry-run --debug"
-
 # ---------- Done ---------- #
 echo "[*] Bootstrap complete. Launch a new shell or run 'zsh' to use your configuration."
