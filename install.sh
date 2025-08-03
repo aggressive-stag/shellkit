@@ -16,7 +16,7 @@ sudo chown "$USER:$USER" /git/shellkit
 # ---------- Tooling ---------- #
 echo "[*] Installing basic tools..."
 sudo apt-get update
-sudo apt-get install -y curl xclip ripgrep zsh wget bat zip htop
+sudo apt-get install -y curl xclip ripgrep zsh wget bat zip htop git 
 
 # fzf
 if [ ! -d "$HOME/.fzf" ]; then
