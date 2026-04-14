@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tmux cheat sheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #21262d;
+    --green: #3fb950;
+    --green-dim: #1a4a25;
+    --yellow: #d29922;
+    --blue: #58a6ff;
+    --purple: #bc8cff;
+    --red: #f85149;
+    --text: #e6edf3;
+    --text-dim: #7d8590;
+    --prefix-bg: #1c2a1c;
+    --prefix-color: #3fb950;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 32px;
+    min-height: 100vh;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+
+  .prefix-badge {
+    margin-left: auto;
+    background: var(--prefix-bg);
+    border: 1px solid var(--green-dim);
+    color: var(--prefix-color);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 10px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-header.sessions  { color: var(--blue);   background: #0d1f38; }
+  .card-header.windows   { color: var(--green);  background: var(--prefix-bg); }
+  .card-header.panes     { color: var(--purple); background: #1e1530; }
+  .card-header.nav       { color: var(--yellow); background: #2a200a; }
+  .card-header.copy      { color: var(--red);    background: #2a0e0e; }
+  .card-header.misc      { color: var(--text-dim); background: #161b22; }
+  .card-header.cli       { color: var(--blue);   background: #0d1f38; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  tr:not(:last-child) td {
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:hover td {
+    background: #1c2128;
+  }
+
+  td {
+    padding: 8px 16px;
+    vertical-align: middle;
+  }
+
+  td:first-child {
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  td:last-child {
+    color: var(--text-dim);
+    font-size: 12px;
+    padding-left: 8px;
+  }
+
+  kbd {
+    display: inline-block;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .prefix {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .no-prefix {
+    color: var(--yellow);
+    font-size: 10px;
+    vertical-align: middle;
+    margin-left: 4px;
+    background: #2a200a;
+    border: 1px solid #5a3e0a;
+    border-radius: 3px;
+    padding: 1px 4px;
+  }
+
+  code {
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 12px;
+    color: var(--blue);
+  }
+
+  .wide {
+    grid-column: 1 / -1;
+  }
+
+  footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 11px;
+    display: flex;
+    gap: 24px;
+  }
+
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>tmux</h1>
+  <span class="subtitle">cheat sheet</span>
+  <div class="prefix-badge">prefix = Ctrl+B</div>
+</header>
+
+<div class="grid">
+
+  <!-- SESSIONS -->
+  <div class="card">
+    <div class="card-header sessions">Sessions</div>
+    <table>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>d</kbd></td><td>Detach from session</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>$</kbd></td><td>Rename current session</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>s</kbd></td><td>List / switch sessions</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>(</kbd> <kbd>)</kbd></td><td>Previous / next session</td></tr>
+    </table>
+  </div>
+
+  <!-- SESSION CLI -->
+  <div class="card">
+    <div class="card-header cli">Session CLI</div>
+    <table>
+      <tr><td><code>tmux</code></td><td>New unnamed session</td></tr>
+      <tr><td><code>tmux new -s main</code></td><td>New named session</td></tr>
+      <tr><td><code>tmux ls</code></td><td>List sessions</td></tr>
+      <tr><td><code>tmux a</code></td><td>Attach to last session</td></tr>
+      <tr><td><code>tmux a -t main</code></td><td>Attach to named session</td></tr>
+      <tr><td><code>tmux kill-session -t main</code></td><td>Kill named session</td></tr>
+    </table>
+  </div>
+
+  <!-- WINDOWS -->
+  <div class="card">
+    <div class="card-header windows">Windows (tabs)</div>
+    <table>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>c</kbd></td><td>New window</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>,</kbd></td><td>Rename window</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>&</kbd></td><td>Close window</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>1-9</kbd></td><td>Jump to window by number</td></tr>
+      <tr><td><kbd>Shift+←</kbd> <kbd>Shift+→</kbd> <span class="no-prefix">no prefix</span></td><td>Previous / next window</td></tr>
+    </table>
+  </div>
+
+  <!-- PANES -->
+  <div class="card">
+    <div class="card-header panes">Panes (splits)</div>
+    <table>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>|</kbd></td><td>Split vertical</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>-</kbd></td><td>Split horizontal</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>x</kbd></td><td>Close pane</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>z</kbd></td><td>Zoom pane (toggle fullscreen)</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>Space</kbd></td><td>Cycle pane layouts</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>{</kbd> <kbd>}</kbd></td><td>Swap pane left / right</td></tr>
+    </table>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="card">
+    <div class="card-header nav">Navigation</div>
+    <table>
+      <tr><td><kbd>Alt+←↑↓→</kbd> <span class="no-prefix">no prefix</span></td><td>Move between panes</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>q</kbd></td><td>Show pane numbers (then press number)</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>;</kbd></td><td>Jump to last active pane</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>o</kbd></td><td>Cycle through panes</td></tr>
+    </table>
+  </div>
+
+  <!-- COPY MODE -->
+  <div class="card">
+    <div class="card-header copy">Scroll &amp; Copy</div>
+    <table>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>Enter</kbd></td><td>Enter copy mode</td></tr>
+      <tr><td><kbd>↑↓</kbd> or <kbd>PgUp</kbd></td><td>Scroll (while in copy mode)</td></tr>
+      <tr><td><kbd>v</kbd></td><td>Begin selection (vi mode)</td></tr>
+      <tr><td><kbd>y</kbd></td><td>Copy selection &amp; exit</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>]</kbd></td><td>Paste buffer</td></tr>
+      <tr><td><kbd>q</kbd> or <kbd>Esc</kbd></td><td>Exit copy mode</td></tr>
+    </table>
+  </div>
+
+  <!-- MISC -->
+  <div class="card">
+    <div class="card-header misc">Misc</div>
+    <table>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>r</kbd></td><td>Reload config</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>?</kbd></td><td>Show all keybindings</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>:</kbd></td><td>tmux command prompt</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>t</kbd></td><td>Show clock</td></tr>
+      <tr><td><kbd class="prefix">Ctrl+B</kbd> <kbd>~</kbd></td><td>Show messages log</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <div class="legend"><span class="no-prefix">no prefix</span> = works without Ctrl+B (custom binding)</div>
+  <div class="legend"><kbd class="prefix">Ctrl+B</kbd> = press prefix first, then the key</div>
+</footer>
+
+</body>
+</html>
