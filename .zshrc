@@ -5,6 +5,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
@@ -110,20 +111,27 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias bat="batcat"
+# Homebrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-# ⌥ Ctrl+F — Fuzzy File Finder (current dir)
+# Brew auto-update (weekly)
+if [[ $(find "$(brew --prefix)/Library/Taps/homebrew/homebrew-core" -maxdepth 0 -mtime +7 2>/dev/null) ]]; then
+  echo "[brew] Running weekly update..."
+  brew update && brew upgrade && brew cleanup
+fi
+
+# fnm (Node version manager)
+eval "$(fnm env --use-on-cd)"
+
+# fzf
 bindkey -s '^F' '$(fzf --query "" --preview "bat --style=numbers --color=always {} || cat {}" --bind "enter:accept")\n'
-
-# 🔁 Ctrl+R — Fuzzy history search (all sessions)
 export FZF_CTRL_R_OPTS="--reverse --no-sort --exact"
-
-# Load fzf's keybindings (assumes fzf is installed via Git or package manager)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# p10k
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+# Tab title
 function set-tab-title {
   print -Pn "\e]0;%n@%m: %~\a"
 }
